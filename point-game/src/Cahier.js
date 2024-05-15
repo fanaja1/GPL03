@@ -1,5 +1,6 @@
-import React from 'react';
-import { Stage, Layer, Line, Text, Circle } from 'react-konva';
+import React, { useState } from 'react';
+import axios from 'axios';
+import { Stage, Layer, Line, Circle } from 'react-konva';
 
 const Cahier = ({ plateau, setPlateau }) => {
     const n = 10; // Taille de la grille
@@ -7,6 +8,7 @@ const Cahier = ({ plateau, setPlateau }) => {
     const height = 500;
     const xInterval = width / n;
     const yInterval = height / n;
+    const [dernierPoint, setDernierPoint] = useState(null);
 
     const createGraduations = (start, end, interval, vertical = false) => {
         const graduations = [];
@@ -33,9 +35,34 @@ const Cahier = ({ plateau, setPlateau }) => {
 
         // Mettre à jour l'état plateau avec la nouvelle matrice
         setPlateau(newPlateau);
+
+        // Mettre à jour l'état dernierPoint avec les coordonnées du dernier point
+        setDernierPoint({ x: (newX + 0.5) * xInterval, y: (newY + 0.5) * yInterval });
+
+        //console.log("click " + newX + " " + newY);
+
+        // Appel de la fonction avec les données à envoyer
+        sendDataToServer(newPlateau, { x: newX, y: newY });
+    };
+
+    const sendDataToServer = async (plateau, dernierPoint) => {
+        try {
+            console.log("--------------");// plateau);
+            console.log("aaaaaaafsdfsaaa");
+            console.log();
+            const response = await axios.put("http://localhost:5001/api/Game", {
+                plateau: JSON.stringify(plateau),
+                dernierPoint: dernierPoint
+            });
+            console.log("aaaaaaaaaaaaaaa");
+            console.log(response.data);
+        } catch (error) {
+            console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);
+        }
     };
 
     return (
+        
         <Stage width={width} height={height} onClick={handleClick}>
             <Layer>
                 {createGraduations(0, width, xInterval)}
@@ -53,8 +80,17 @@ const Cahier = ({ plateau, setPlateau }) => {
                         )
                     ))
                 )}
+                {dernierPoint && (
+                    <Circle
+                        x={dernierPoint.x}
+                        y={dernierPoint.y}
+                        radius={Math.min(xInterval, yInterval) / 4}
+                        fill="blue"
+                    />
+                )}
             </Layer>
         </Stage>
+        
     );
 };
 
