@@ -47,15 +47,33 @@ const Cahier = ({ plateau, setPlateau }) => {
 
     const sendDataToServer = async (plateau, dernierPoint) => {
         try {
-            console.log("--------------");// plateau);
-            console.log("aaaaaaafsdfsaaa");
-            console.log();
-            const response = await axios.put("http://localhost:5001/api/Game", {
-                plateau: JSON.stringify(plateau),
-                dernierPoint: dernierPoint
-            });
-            console.log("aaaaaaaaaaaaaaa");
-            console.log(response.data);
+            //console.log("aaaaaaaaaaaaaaa");
+
+            const response = await axios.put("https://localhost:44356/api/Game/ProcessData",
+                JSON.stringify(dernierPoint), // Convertir en JSON
+                {
+                    headers: {
+                        'Content-Type': 'application/json' // Définir le type de contenu
+                    }
+                }
+            );
+
+            //console.log(response.data);
+            //console.log("aaaaaaafsdfsaaa");
+            //console.log("--------------", typeof(JSON.stringify(plateau)), "--------------");
+
+            const response2 = await axios.put("https://localhost:44356/api/Game/ProcessMat",
+                JSON.stringify(plateau), // Convertir en JSON
+                {
+                    headers: {
+                        'Content-Type': 'application/json' // Définir le type de contenu
+                    }
+                }
+            );
+
+            //console.log("bbbbbbbbbbbbbbb");
+            //console.log(response2.data);
+
         } catch (error) {
             console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);
         }
