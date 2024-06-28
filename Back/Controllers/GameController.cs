@@ -11,32 +11,33 @@ namespace Back.Controllers
     {
         [HttpPut]
         [Route("ProcessData")]
-        public IActionResult ProcessData([FromBody] Point data)
+        public IActionResult ProcessData([FromBody] PlateauData data)
         {
+            // Générer 5 points aléatoires
+            List<Point> randomPoints = GenerateRandomPointsList(5);
 
-            //return Ok(data.Plateau + " / " + data.DernierPoint.X + "  " + data.DernierPoint.Y);
-            return Ok($"Données reçues : {data.X} - {data.Y}");//.Plateau + " / " + data.DernierPoint.X + "  " + data.DernierPoint.Y);
+            return Ok(randomPoints);
         }
 
-        [HttpPut]
-        [Route("ProcessMat")]
-        public IActionResult ProcessMat([FromBody] int[][] data)
+        private List<Point> GenerateRandomPointsList(int count)
         {
-            // Traitement de la matrice plateau
-            // Par exemple :
-            Console.WriteLine("Matrice reçue : ");
-            foreach (var row in data)
+            Random random = new Random();
+            List<Point> points = new List<Point>();
+
+            for (int i = 0; i < count; i++)
             {
-                Console.WriteLine(string.Join(", ", row));
+                // Générer des coordonnées aléatoires entre 0 et 100 (par exemple)
+                int x = random.Next(0, 100);
+                int y = random.Next(0, 100);
+                points.Add(new Point { X = x, Y = y });
             }
 
-            return Ok(data);
+            return points;
         }
-
 
         public class PlateauData
         {
-            public string Plateau { get; set; }
+            public int[][] Plateau { get; set; }
             public Point DernierPoint { get; set; }
         }
 

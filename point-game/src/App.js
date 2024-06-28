@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import Cahier from './Cahier';
+import Page from './Page';
 
 const App = () => {
-    const [plateau, setPlateau] = useState(Array.from({ length: 10 }, () => Array(10).fill(0)));
+    const numRows = 8;
+    const numCols = 15;
+    const [plateau, setPlateau] = useState(Array.from({ length: 1 + numRows + 1 }, () => Array(1 + numCols + 1).fill(0)));
 
-    // Fonction d'affichage de la matrice
-    const renderMatrix = (matrix) => {
+    //Fonction d'affichage de la matrice <Cahier plateau={plateau} setPlateau={setPlateau} />
+    const renderMatrix = (matrix) => {/*
         return (
             <table>
                 <tbody>
@@ -20,17 +23,16 @@ const App = () => {
                     ))}
                 </tbody>
             </table>
-        );
+        ); */
     };
 
     
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
             <div style={{ marginRight: '20px' }}>
-                <Cahier plateau={plateau} setPlateau={setPlateau} />
+                <Page numRows={numRows - 1} numCols={numCols - 1} plateau={plateau} setPlateau={setPlateau} />
             </div>
             <div>
-                <h2>Matrice Plateau:</h2>
                 {renderMatrix(plateau)}
             </div>
         </div>
