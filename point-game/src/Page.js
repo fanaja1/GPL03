@@ -19,10 +19,54 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     let scale = a > b ? Math.floor(a) : Math.floor(a); // Échelle pour les graduations
     scale = 50;
 
-
     // Tableaux pour stocker les points de chaque joueur avec leur couleur
     const [playerPoints, setPlayerPoints] = useState(Array.from({ length: totalPlayers }, () => []));
 
+
+    // Initialisation des circuits pour chaque joueur
+    let playersCircuitsList = Array(totalPlayers).fill(null).map(() => []);
+
+    const generateRandomPointsList = (count) => {
+        const points = [];
+        for (let i = 0; i < count; i++) {
+            const x = Math.floor(Math.random() * numCols);
+            const y = Math.floor(Math.random() * numRows);
+            points.push({ x, y });
+        }
+        return points;
+    };
+
+    //playersCircuitsList[0].push(generateRandomPointsList(4));
+    //playersCircuitsList[0].push(generateRandomPointsList(4));
+    //playersCircuitsList[1].push(generateRandomPointsList(4));
+
+    const drawClosedCircuit = () => {
+        let lines = [];
+
+        for (let playerIndex = 0; playerIndex < totalPlayers; playerIndex++) {
+            let circuits = playersCircuitsList[playerIndex];
+            let color = playerIndex === 0 ? "red" : "blue"; // Vous pouvez ajouter plus de couleurs si nécessaire
+
+            for (let circuitIndex = 0; circuitIndex < circuits.length; circuitIndex++) {
+                const circuit = circuits[circuitIndex];
+                const points = circuit.flatMap(point => [marginLeft + point.x * scale, marginTop + point.y * scale]);
+
+                lines.push(
+                    <Line
+                        key={`player-${playerIndex}-circuit-${circuitIndex}`}
+                        points={points}
+                        stroke={color}
+                        strokeWidth={2}
+                        closed={true} // Fermer le circuit
+                        lineJoin="round"
+                        lineCap="round"
+                    />
+                );
+            }
+        }
+
+        return lines;
+    };
 
     const renderHorizontalLines = () => {
         const lines = [];
@@ -84,8 +128,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
         const { x: closestX, y: closestY } = getClosestIntersection(x, y);
 
 
-        const newX = Math.round((x - marginLeft) / scale); // Calcul de la colonne la plus proche
-        const newY = Math.round((y - marginTop) / scale); // Calcul de la ligne la plus proche
+        const newX = Math.round((x - marginLeft) / scale) + 1; // Calcul de la colonne la plus proche
+        const newY = Math.round((y - marginTop) / scale) + 1; // Calcul de la ligne la plus proche
 
         //console.log("ix", newX, " iy", newY);
 
@@ -97,25 +141,32 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
 
             // Mettre à jour la case correspondante dans la matrice plateau
-            const newPlateau = plateau.map((row, rowIndex) =>
-                row.map((value, colIndex) => (rowIndex === newY + 1 && colIndex === newX + 1 ? currentPlayer : value))
-            );
+            //const newPlateau = plateau.map((row, rowIndex) =>
+            //    row.map((value, colIndex) => (rowIndex === newY && colIndex === newX ? currentPlayer : value))
+            //);
+
+            plateau[newY][newX] = currentPlayer;
+
 
             // Mettre à jour l'état plateau avec la nouvelle matrice
-            setPlateau(newPlateau);
-
-            setCurrentPlayer((currentPlayer % totalPlayers) + 1); 
+            setPlateau(plateau);
+            //console.log("x", newX, " y", newY);
+            //console.log(plateau, " cp ", currentPlayer);
 
             // Appel de la fonction avec les données à envoyer
-            sendDataToServer(newPlateau, { x: newX + 1, y: newY + 1 });
+            sendDataToServer(plateau, { x: newX + 1, y: newY + 1 });
+
+            setCurrentPlayer((currentPlayer % totalPlayers) + 1); 
         }
     };
 
     const sendDataToServer = async (plateau, dernierPoint) => {
         try {
             const response = await axios.put("https://localhost:44356/api/Game/ProcessData", {
+                circuitList: playersCircuitsList,
                 plateau: plateau,
-                dernierPoint: dernierPoint
+                dernierPoint: dernierPoint,
+                currentPlayer: currentPlayer
             });
 
             console.log(response.data);
@@ -135,6 +186,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
             <Layer>
                 {renderHorizontalLines()}
                 {renderVerticalLines()}
+
+                {drawClosedCircuit()}
 
                 {/* Axes */}
                 <Line points={[0, 0, marginLeft + width + marginRight, 0]} stroke="black" />
