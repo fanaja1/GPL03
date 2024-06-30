@@ -472,30 +472,24 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\User\\.nuget\\packages\\": {},
-    "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
+    "/home/lenovo/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\User\\Documents\\Projects\\GPL3\\Back\\Back.csproj",
+      "projectUniqueName": "/home/lenovo/Public/GPL3/Back/Back.csproj",
       "projectName": "Back",
-      "projectPath": "C:\\Users\\User\\Documents\\Projects\\GPL3\\Back\\Back.csproj",
-      "packagesPath": "C:\\Users\\User\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\User\\Documents\\Projects\\GPL3\\Back\\obj\\",
+      "projectPath": "/home/lenovo/Public/GPL3/Back/Back.csproj",
+      "packagesPath": "/home/lenovo/.nuget/packages/",
+      "outputPath": "/home/lenovo/Public/GPL3/Back/obj/",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-      ],
       "configFilePaths": [
-        "C:\\Users\\User\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+        "/home/lenovo/.nuget/NuGet/NuGet.Config"
       ],
       "originalTargetFrameworks": [
         "net8.0"
       ],
       "sources": {
-        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
         "https://api.nuget.org/v3/index.json": {}
       },
       "frameworks": {
@@ -547,7 +541,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\8.0.204/PortableRuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "/home/lenovo/.dotnet/sdk/8.0.204/PortableRuntimeIdentifierGraph.json"
       }
     }
   }

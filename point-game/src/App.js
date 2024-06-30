@@ -1,41 +1,22 @@
 import React, { useState } from 'react';
-import Cahier from './Cahier';
-import Page from './Page';
+import Home from './page/Accueil.js';
+import NotFound from './page/notFound.js'
+import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
+import Param from './page/param.js';
 
 const App = () => {
-    const numRows = 8;
-    const numCols = 15;
-    const [plateau, setPlateau] = useState(Array.from({ length: 1 + numRows + 1 }, () => Array(1 + numCols + 1).fill(0)));
-
-    //Fonction d'affichage de la matrice <Cahier plateau={plateau} setPlateau={setPlateau} />
-    const renderMatrix = (matrix) => {/*
-        return (
-            <table>
-                <tbody>
-                    {matrix.map((row, rowIndex) => (
-                        <tr key={rowIndex}>
-                            {row.map((value, colIndex) => (
-                                <td key={`${rowIndex}-${colIndex}`} style={{ border: '1px solid black', padding: '5px' }}>
-                                    {value}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
-        ); */
-    };
-
+    //const numRows = 8;
+    //const numCols = 15;
+    //const [plateau, setPlateau] = useState(Array.from({ length: 1 + numRows + 1 }, () => Array(1 + numCols + 1).fill(0)));
     
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-            <div style={{ marginRight: '20px' }}>
-                <Page numRows={numRows - 1} numCols={numCols - 1} plateau={plateau} setPlateau={setPlateau} />
-            </div>
-            <div>
-                {renderMatrix(plateau)}
-            </div>
-        </div>
+        <Router>
+            <Routes>
+                <Route path="*" element={<NotFound/>}></Route>
+                <Route path="/" element={<Home/>}></Route>
+                <Route path="/parametrage" element={<Param/>}></Route>
+            </Routes>
+        </Router>
     );
 };
 

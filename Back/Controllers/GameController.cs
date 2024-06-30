@@ -13,10 +13,26 @@ namespace Back.Controllers
         [Route("ProcessData")]
         public IActionResult ProcessData([FromBody] PlateauData data)
         {
-            // Générer 5 points aléatoires
-            List<Point> randomPoints = GenerateRandomPointsList(5);
+            List<List<Point>> points = new List<List<Point>>();
 
-            return Ok(randomPoints);
+            points.Add(GenerateRandomPointsList(5));
+            points.Add(GenerateRandomPointsList(5));
+
+            // // Structurer la réponse
+            var response = new ResponseData
+            {
+                Points = points,
+                Status = false
+            };
+
+
+            return Ok(response);
+        }
+
+        public class ResponseData
+        {
+            public List<List<Point>> Points { get; set; }
+            public bool Status { get; set; }
         }
 
         private List<Point> GenerateRandomPointsList(int count)
