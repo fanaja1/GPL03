@@ -24,7 +24,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
 
     // Initialisation des circuits pour chaque joueur
-    let playersCircuitsList = Array(totalPlayers).fill(null).map(() => []);
+    const [playersCircuitsList, setPlayersCircuitsList] = useState(Array(totalPlayers).fill(null).map(() => []));
 
     const generateRandomPointsList = (count) => {
         const points = [];
@@ -133,7 +133,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
         //console.log("ix", newX, " iy", newY);
 
-        if (isValidPoint(x, y)) {
+        if (isValidPoint(x, y) && plateau[newY][newX] === 0) {
             // Ajouter le point au joueur courant
             const updatedPlayerPoints = [...playerPoints];
             updatedPlayerPoints[currentPlayer - 1].push({ x: closestX, y: closestY });
@@ -154,9 +154,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
             //console.log(plateau, " cp ", currentPlayer);
 
             // Appel de la fonction avec les données à envoyer
-            sendDataToServer(plateau, { x: newX + 1, y: newY + 1 });
+            sendDataToServer(plateau, { x: newX, y: newY });
 
-            setCurrentPlayer((currentPlayer % totalPlayers) + 1); 
         }
     };
 
@@ -169,7 +168,14 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                 currentPlayer: currentPlayer
             });
 
-            console.log(response.data);
+            //console.log(response.data.circuitList);
+            setCurrentPlayer(response.data.currentPlayer); 
+
+            const circuitData = response.data.circuitList.map(playerCircuits =>
+                playerCircuits.map(circuit => circuit.map(point => ({ x: point.x - 1, y: point.y - 1})))
+            );
+
+            setPlayersCircuitsList(circuitData);
 
         } catch (error) {
             console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);

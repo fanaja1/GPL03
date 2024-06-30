@@ -32,15 +32,6 @@ namespace Back.Controllers
             public int Y { get; set; }
         }
 
-        public class ResponseData
-        {
-            public List<List<List<Point>>> CircuitList { get; set; }  // joueur<n<circuit<point>>>
-            public int currentPlayer { get; set; }
-
-            //Debugging***********************************/
-            public DebugClass debug { get; set; }
-            //public int[][] plateau { get; set; }
-        }
 
         public class DebugClass
         {
@@ -48,8 +39,10 @@ namespace Back.Controllers
             public bool validation { get; set; }
             public bool sValidation { get; set; }
             public List<Point> circuit { get; set; }
-            public bool catchOpponent { get; set; }
             public bool caugth { get; set; }
+            public bool catchOpponent_firstV { get; internal set; }
+            public bool tongaEto { get; internal set; }
+            public List<List<bool>> tab { get; set; } = new List<List<bool>>();
         }
 
         public DebugClass debugClass;
@@ -71,9 +64,18 @@ namespace Back.Controllers
         List<List<List<Point>>> circuitList;
         List<List<Point>> xyList = new List<List<Point>>();
 
-
-
         bool secondValidation = false;
+
+
+        public class ResponseData
+        {
+            public List<List<List<Point>>> CircuitList { get; set; }  // joueur<n<circuit<point>>>
+            public int currentPlayer { get; set; }
+
+            //Debugging***********************************/
+            //public DebugClass debug { get; set; }
+            //public int[][] plateau { get; set; }
+        }
 
         [HttpPut]
         [Route("ProcessData")]
@@ -112,7 +114,7 @@ namespace Back.Controllers
 
             debX = data.DernierPoint.X;
             debY = data.DernierPoint.Y;
-            numRows = data.Plateau.Length;
+            numRows = data.Plateau[0].Length;
 
             debugClass = new DebugClass();
 
@@ -132,7 +134,7 @@ namespace Back.Controllers
                 CircuitList = circuitList,
                 //CircuitList = data.CircuitList,
                 currentPlayer = currentPlayer,
-                debug = debugClass
+                //debug = debugClass
             };
 
             return Ok(response);
@@ -141,6 +143,7 @@ namespace Back.Controllers
         private bool BuildUpCircuit(int x, int y, List<List<Point>> xyList, List<List<List<Point>>> circuitList, int apart, int counter)
         {
             bool buildedUp = false;
+
 
             xyList[currentPlayer - 1].Add(new Point { X = x, Y = y }); // à l'indice counter
 
@@ -401,6 +404,7 @@ namespace Back.Controllers
 
         private bool CatchOpponent(List<Point> circuit)
         {
+
             countScore = 0;
             int previousX = -1;
             int previousY = -1;
@@ -421,6 +425,8 @@ namespace Back.Controllers
                 }
             }
 
+            debugClass.tab.Add(new List<bool>());
+
             // Recherche de gauche à doite à partir de chaque point du circuit
             for (int i = 0; i < circuit.Count - 1; i++)
             {
@@ -429,7 +435,7 @@ namespace Back.Controllers
                 int beginX = circuit[i].X;
                 int endX = 0;
 
-                for (int x = circuit[i].X + 1; x < numRows - 1; x++)
+                for (int x = ((circuit[i].X) + 1); x < (numRows - 1); x++)
                 {
                     if (!check && IsInCircuit(x, y, circuit))
                     {
@@ -445,8 +451,11 @@ namespace Back.Controllers
                     if (x == numRows - 2)
                     {
                         check = false;
+                        debugClass.tab[debugClass.tab.Count - 1].Add(check);
                     }
                 }
+
+                debugClass.tongaEto = true;
 
                 if (check && !(beginX == previousX && y == previousY))
                 {
@@ -509,7 +518,7 @@ namespace Back.Controllers
 
             bool firstValidation = CatchOpponent(circuit);
 
-            debugClass.catchOpponent = firstValidation;
+            debugClass.catchOpponent_firstV = firstValidation;
 
             if (firstValidation && secondValidation)
             {
