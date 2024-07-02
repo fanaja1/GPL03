@@ -9,15 +9,42 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     const width = 450;
     const height = 450;
 
-    const marginTop = 100;
-    const marginBottom = 60;
-    const marginLeft = 120;
-    const marginRight = 40;
+    const [marginTop, setMarginTop] = useState(100);
+    const [marginBottom, setMarginBottom] = useState(60);
+    const [marginLeft, setMarginLeft] = useState(120);
+    const [marginRight, setMarginRight] = useState(40);
+    const [radius, setRadius] = useState(5);
 
     let a = width / numCols;
     let b = height / numRows;
-    let scale = a > b ? Math.floor(a) : Math.floor(a); // Échelle pour les graduations
+    //let s = a > b ? Math.floor(a) : Math.floor(a); // Échelle pour les graduations
+
+    const [scale, setScale] = useState(a > b ? Math.floor(a) : Math.floor(a));
+    const [echelle, setEchelle] = useState(1); // Nouvelle variable echelle à 1 par défaut
+    const [scrolling, setScrolling] = useState(false); // État pour suivre si le défilement est actif
+
+    // Gestionnaire d'événements pour la molette
+    const handleWheel = (event) => {
+        event.evt.preventDefault(); // Utiliser l'événement natif pour prévenir le comportement par défaut
+
+        setEchelle(event.evt.deltaY < 0 ? 1.1 : 1 / 1.1);
+
+        if ((scale * echelle) > 20) {
+            setScale((prevScale) => Math.round(prevScale * echelle));
+            // Ajuster les marges en fonction de l'échelle
+            setMarginTop((prevMarginTop) => Math.round(prevMarginTop * echelle));
+            setMarginBottom((prevMarginBottom) => Math.round(prevMarginBottom * echelle));
+            setMarginLeft((prevMarginLeft) => Math.round(prevMarginLeft * echelle));
+            setMarginRight((prevMarginRight) => Math.round(prevMarginRight * echelle));
+            setRadius((prevRadius) => prevRadius * echelle);
+        }
+        // Indiquer que le défilement est actif
+        setScrolling(true);
+
+        console.log("cell", scale, "radius", radius);
+    };
     //scale = 50;
+
 
     // Tableaux pour stocker les points de chaque joueur avec leur couleur
     const [playerPoints, setPlayerPoints] = useState(Array.from({ length: totalPlayers }, () => []));
@@ -26,19 +53,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     // Initialisation des circuits pour chaque joueur
     const [playersCircuitsList, setPlayersCircuitsList] = useState(Array(totalPlayers).fill(null).map(() => []));
 
-    const generateRandomPointsList = (count) => {
-        const points = [];
-        for (let i = 0; i < count; i++) {
-            const x = Math.floor(Math.random() * numCols);
-            const y = Math.floor(Math.random() * numRows);
-            points.push({ x, y });
-        }
-        return points;
-    };
 
-    //playersCircuitsList[0].push(generateRandomPointsList(4));
-    //playersCircuitsList[0].push(generateRandomPointsList(4));
-    //playersCircuitsList[1].push(generateRandomPointsList(4));
 
     const drawClosedCircuit = () => {
         let lines = [];
@@ -114,6 +129,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     const handleMouseMove = (event) => {
         const { x, y } = event.target.getStage().getPointerPosition();
         const { x: closestX, y: closestY } = getClosestIntersection(x, y);
+        setScrolling(false);
 
         if (isValidPoint(x, y)) {
             setMousePos({ x: closestX, y: closestY });
@@ -136,7 +152,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
         if (isValidPoint(x, y) && plateau[newY][newX] === 0) {
             // Ajouter le point au joueur courant
             const updatedPlayerPoints = [...playerPoints];
-            updatedPlayerPoints[currentPlayer - 1].push({ x: closestX, y: closestY });
+            updatedPlayerPoints[currentPlayer - 1].push({ x: newX - 1, y: newY - 1 });
             setPlayerPoints(updatedPlayerPoints);
 
 
@@ -169,7 +185,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                 currentPlayer: currentPlayer
             });
 
-            console.log(response.data);
+            //console.log(response.data);
             setCurrentPlayer(response.data.currentPlayer); 
 
             const circuitData = response.data.circuitList.map(playerCircuits =>
@@ -197,6 +213,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
             height={marginTop + height + marginBottom}
             onClick={handleClick}
             onMouseMove={handleMouseMove}
+            onWheel={handleWheel}
         >
             <Layer>
                 {renderHorizontalLines()}
@@ -213,16 +230,16 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                     points.map((point, index) => (
                         <Circle
                             key={`${playerIndex}-${index}`}
-                            x={point.x}
-                            y={point.y}
-                            radius={5}
+                            x={point.x * scale + marginLeft}
+                            y={point.y * scale + marginTop}
+                            radius={radius}
                             fill={playerIndex === 0 ? 'red' : playerIndex === 1 ? 'blue' : playerIndex === 2 ? 'green' : 'black'} // Exemple de couleurs différentes pour les joueurs
                         />
                     ))
                 )}
 
                 {/* Cercle qui suit la souris */}
-                {isValidPoint(mousePos.x, mousePos.y) && (
+                {!scrolling && isValidPoint(mousePos.x, mousePos.y) && (
                     <Circle
                         x={mousePos.x}
                         y={mousePos.y}
