@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import Cahier from './Cahier';
 import Page from './Page';
 
 const App = () => {
-    const numRows = 8;
+    const numRows = 15;
     const numCols = 15;
     const [plateau, setPlateau] = useState(Array.from({ length: 1 + numRows + 1 }, () => Array(1 + numCols + 1).fill(0)));
 

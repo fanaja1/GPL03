@@ -6,8 +6,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     const [currentPlayer, setCurrentPlayer] = useState(1);
     let totalPlayers = 2;
 
-    const width = 750;
-    const height = 400;
+    const width = 450;
+    const height = 450;
 
     const marginTop = 100;
     const marginBottom = 60;
@@ -17,7 +17,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     let a = width / numCols;
     let b = height / numRows;
     let scale = a > b ? Math.floor(a) : Math.floor(a); // Échelle pour les graduations
-    scale = 50;
+    //scale = 50;
 
     // Tableaux pour stocker les points de chaque joueur avec leur couleur
     const [playerPoints, setPlayerPoints] = useState(Array.from({ length: totalPlayers }, () => []));
@@ -45,11 +45,11 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
         for (let playerIndex = 0; playerIndex < totalPlayers; playerIndex++) {
             let circuits = playersCircuitsList[playerIndex];
-            let color = playerIndex === 0 ? "red" : "blue"; // Vous pouvez ajouter plus de couleurs si nécessaire
+            let color = playerIndex === 0 ? "red" : playerIndex === 1 ? "blue" : playerIndex === 2 ? 'green' : 'black'; 
 
             for (let circuitIndex = 0; circuitIndex < circuits.length; circuitIndex++) {
                 const circuit = circuits[circuitIndex];
-                const points = circuit.flatMap(point => [marginLeft + point.x * scale, marginTop + point.y * scale]);
+                const points = circuit.flatMap(point => [marginLeft + (point.x - 1) * scale, marginTop + (point.y - 1) * scale]);
 
                 lines.push(
                     <Line
@@ -155,27 +155,36 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
             // Appel de la fonction avec les données à envoyer
             sendDataToServer(plateau, { x: newX, y: newY });
+            //setCurrentPlayer(currentPlayer % totalPlayers + 1); 
 
         }
     };
 
     const sendDataToServer = async (plateau, dernierPoint) => {
-        try {
-            const response = await axios.put("https://localhost:44356/api/Game/ProcessData", {
-                circuitList: playersCircuitsList,
+        try {//https://localhost:44356
+            const response = await axios.put("http://localhost:7001/api/Game/ProcessData", {
+                CircuitList: playersCircuitsList,
                 plateau: plateau,
                 dernierPoint: dernierPoint,
                 currentPlayer: currentPlayer
             });
 
-            //console.log(response.data.circuitList);
+            console.log(response.data);
             setCurrentPlayer(response.data.currentPlayer); 
 
             const circuitData = response.data.circuitList.map(playerCircuits =>
-                playerCircuits.map(circuit => circuit.map(point => ({ x: point.x - 1, y: point.y - 1})))
+                playerCircuits.map(circuit => circuit.map(point => ({ x: point.x, y: point.y})))
             );
 
             setPlayersCircuitsList(circuitData);
+
+            const plateauData = response.data.plateau.map(row =>
+                row.map(cell => cell)
+            );
+
+            // Mettez à jour l'état avec la nouvelle structure de données
+            setPlateau(plateauData);
+
 
         } catch (error) {
             console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);
@@ -207,7 +216,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                             x={point.x}
                             y={point.y}
                             radius={5}
-                            fill={playerIndex === 0 ? 'red' : 'blue'} // Exemple de couleurs différentes pour les joueurs
+                            fill={playerIndex === 0 ? 'red' : playerIndex === 1 ? 'blue' : playerIndex === 2 ? 'green' : 'black'} // Exemple de couleurs différentes pour les joueurs
                         />
                     ))
                 )}
@@ -218,7 +227,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                         x={mousePos.x}
                         y={mousePos.y}
                         radius={10}
-                        fill={currentPlayer === 1 ? 'red' : 'blue'}
+                        fill={currentPlayer === 1 ? 'red' : currentPlayer === 2 ? 'blue' : currentPlayer === 3 ? 'green' : 'black'}
                         opacity={0.5} // Opacité de 50%
                     />
                 )}

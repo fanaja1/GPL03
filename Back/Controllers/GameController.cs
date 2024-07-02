@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using System.Text;
 
 namespace Back.Controllers
 {
@@ -25,13 +26,15 @@ namespace Back.Controllers
         //    return points;
         //}
 
-
         public class Point
         {
             public int X { get; set; }
             public int Y { get; set; }
+            public override string ToString()
+            {
+                return $"({X}, {Y})";
+            }
         }
-
 
         public class DebugClass
         {
@@ -39,6 +42,12 @@ namespace Back.Controllers
             public bool validation { get; set; }
             public bool sValidation { get; set; }
             public List<Point> circuit { get; set; }
+
+            public List<string> log { get; set; } = new List<string>();
+            public List<string> log2 { get; set; } = new List<string>();
+
+            public List<List<Point>> xyList { get; set; } = new List<List<Point>>();
+
             public bool caugth { get; set; }
             public bool catchOpponent_firstV { get; internal set; }
             public bool tongaEto { get; internal set; }
@@ -55,37 +64,34 @@ namespace Back.Controllers
             public int currentPlayer { get; set; }
         }
 
-
-        int totalPlayer = 2;
+        int totalPlayer;
         int currentPlayer = 1;
         int debX, debY;
         int[][] grid;
-        int numRows, countScore, tempScore;
+        int numRows, countScore, tempScore, numCols;
         List<List<List<Point>>> circuitList;
-        List<List<Point>> xyList = new List<List<Point>>();
+        List<Point> xyList;
 
         bool secondValidation = false;
-
 
         public class ResponseData
         {
             public List<List<List<Point>>> CircuitList { get; set; }  // joueur<n<circuit<point>>>
             public int currentPlayer { get; set; }
+            public int[][] plateau { get; set; }
 
             //Debugging***********************************/
-            //public DebugClass debug { get; set; }
-            //public int[][] plateau { get; set; }
+            public DebugClass debug { get; set; }
+            public int score { get; internal set; }
         }
 
         [HttpPut]
         [Route("ProcessData")]
         public IActionResult ProcessData([FromBody] PlateauData data)
         {
+            totalPlayer = data.CircuitList.Count;
             currentPlayer = data.currentPlayer;
-            for (int i = 0; i < totalPlayer; i++)
-            {
-                xyList.Add(new List<Point>());
-            }
+            xyList = new List<Point>();
 
             grid = new int[data.Plateau.Length][];
             for (int i = 0; i < grid.Length; i++)
@@ -103,10 +109,21 @@ namespace Back.Controllers
 
             //grid = data.Plateau;
 
+            // Initialisation et copie de la liste de circuits
             circuitList = new List<List<List<Point>>>();
-            for (int i = 0; i < totalPlayer; i++)
+            foreach (var outerList in data.CircuitList)
             {
-                circuitList.Add(new List<List<Point>>());
+                var innerListContainer = new List<List<Point>>();
+                foreach (var innerList in outerList)
+                {
+                    var pointList = new List<Point>();
+                    foreach (var point in innerList)
+                    {
+                        pointList.Add(new Point { X = point.X, Y = point.Y });
+                    }
+                    innerListContainer.Add(pointList);
+                }
+                circuitList.Add(innerListContainer);
             }
 
             //points.Add(GenerateRandomPointsList(5));
@@ -114,7 +131,8 @@ namespace Back.Controllers
 
             debX = data.DernierPoint.X;
             debY = data.DernierPoint.Y;
-            numRows = data.Plateau[0].Length;
+            numRows = data.Plateau.Length;
+            numCols = data.Plateau[0].Length;
 
             debugClass = new DebugClass();
 
@@ -122,30 +140,32 @@ namespace Back.Controllers
 
             if (!status || tempScore == 0)
             {
+                currentPlayer = currentPlayer % totalPlayer + 1;
             }
-            currentPlayer = currentPlayer == 1 ? 2 : 1;
-
-            tempScore = 0;
-            xyList.Clear();
 
             // // Structurer la réponse
             var response = new ResponseData
             {
                 CircuitList = circuitList,
-                //CircuitList = data.CircuitList,
+                plateau = grid,
                 currentPlayer = currentPlayer,
-                //debug = debugClass
+                score = tempScore,
+                debug = debugClass
             };
+
+            tempScore = 0;
+            xyList.Clear();
 
             return Ok(response);
         }
 
-        private bool BuildUpCircuit(int x, int y, List<List<Point>> xyList, List<List<List<Point>>> circuitList, int apart, int counter)
+        private bool BuildUpCircuit(int x, int y, List<Point> xyList, List<List<List<Point>>> circuitList, int apart, int counter)
         {
             bool buildedUp = false;
 
+            xyList.Add(new Point { X = x, Y = y }); // à l'indice counter
 
-            xyList[currentPlayer - 1].Add(new Point { X = x, Y = y }); // à l'indice counter
+            debugClass.log.Add("1- counter:" + counter + " apart:" + apart + " list:" + ConvertListToString(CopyCircuit(xyList)));
 
             for (int i = -1; i <= 1; i++)
             {
@@ -158,21 +178,21 @@ namespace Back.Controllers
                     {
                         if (x + j == debX && y + i == debY)
                         {
-                            xyList[currentPlayer - 1].Add(new Point { X = x + j, Y = y + i }); // à l'indice counter + 1
+                            xyList.Add(new Point { X = x + j, Y = y + i }); // à l'indice counter + 1
 
                             // Fermer le circuit en ajoutant une copie des coordonnées de xyList à circuitList
-                            List<Point> xyListCopy = CopyCircuit(xyList[currentPlayer - 1]);
+                            List<Point> xyListCopy = CopyCircuit(xyList);
 
                             bool validation = ValidateCircuit(xyListCopy, circuitList);
 
                             debugClass.validation = validation;
                             debugClass.sValidation = secondValidation;
-                            debugClass.circuit = CopyCircuit(xyList[currentPlayer - 1]);
+                            debugClass.circuit = CopyCircuit(xyList);
 
                             // Réinitialiser la seconde validation
                             secondValidation = false;
 
-                            xyList[currentPlayer - 1].RemoveAt(counter);
+                            xyList.RemoveRange(counter, xyList.Count - counter);
 
                             return validation;
                         }
@@ -197,9 +217,30 @@ namespace Back.Controllers
                     }
                 }
             }
+            
+            debugClass.log.Add("2- counter:" + counter + " list:" + ConvertListToString(CopyCircuit(xyList)));
 
-            xyList[currentPlayer - 1].RemoveAt(xyList[currentPlayer - 1].Count - 1);
+
+            xyList.RemoveAt(xyList.Count - 1);
             return buildedUp;
+        }
+
+        public static string ConvertListToString(List<Point> points)
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.Append("[");
+
+            for (int i = 0; i < points.Count; i++)
+            {
+                sb.Append(points[i].ToString());
+                if (i < points.Count - 1)
+                {
+                    sb.Append(", ");
+                }
+            }
+
+            sb.Append("]");
+            return sb.ToString();
         }
 
 
@@ -285,8 +326,8 @@ namespace Back.Controllers
             {
                 for (int i = leng; i > 0; i--)
                 {
-                    if (x == xyList[currentPlayer - 1][i].X &&
-                        y == xyList[currentPlayer - 1][i].Y)
+                    if (x == xyList[i].X &&
+                        y == xyList[i].Y)
                     {
                         return false;
                     }
@@ -324,6 +365,7 @@ namespace Back.Controllers
             return false;
         }
 
+        //point adve tratra anaty circuit
         private bool IsCaught(int x, int y, List<Point> circuit)
         {
             bool temp = false;
@@ -376,15 +418,28 @@ namespace Back.Controllers
         private bool IsCaughtByNonSubCircuit(int[][] gridCopy, int beginX, int x, int y)
         {
             bool outValue = false;
-            int tempPlayer = ((gridCopy[y][x] - 1) % 3) + 1;
-            int other = tempPlayer == 1 ? 2 : 1;
+            int tempPlayer = ((gridCopy[y][x] - 1) % (totalPlayer + 1)) + 1;//s/ 2
+            //int other = tempPlayer == 1 ? 2 : 1;
+
+            int[] other = new int[totalPlayer - 1]; //s/ 1 ??-3-4
+
+            // Remplir le tableau avec des valeurs 1, 3, et 4
+            int index = 0;
+            for (int i = 1; i <= totalPlayer; i++)
+            {
+                if (i != tempPlayer)
+                {
+                    other[index++] = i;
+                }
+            }
 
             for (int j = x - 1; j > beginX; j--)
             {
-                int currentJ = (gridCopy[y][j] - 1) % 3;
-                if (currentJ == other - 1)
+                int currentJ = (gridCopy[y][j] - 1) % (totalPlayer + 1);//s/ 0 (grid rouge)
+                int indexOfThree = Array.FindIndex(other, element => element == (currentJ + 1));
+                if (indexOfThree != -1)
                 {
-                    foreach (var c in circuitList[other - 1])
+                    foreach (var c in circuitList[other[indexOfThree] - 1])
                     {
                         if (IsInCircuit(j, y, c))
                         {
@@ -435,7 +490,7 @@ namespace Back.Controllers
                 int beginX = circuit[i].X;
                 int endX = 0;
 
-                for (int x = ((circuit[i].X) + 1); x < (numRows - 1); x++)
+                for (int x = ((circuit[i].X) + 1); x < (numCols - 1); x++)
                 {
                     if (!check && IsInCircuit(x, y, circuit))
                     {
@@ -448,40 +503,42 @@ namespace Back.Controllers
                         endX = x;
                         break;
                     }
-                    if (x == numRows - 2)
+                    if (x == numCols - 2)
                     {
                         check = false;
                         debugClass.tab[debugClass.tab.Count - 1].Add(check);
                     }
                 }
 
-                debugClass.tongaEto = true;
 
                 if (check && !(beginX == previousX && y == previousY))
                 {
+                    // mijery ze point adve tratra
                     for (int x = beginX + 1; x < endX; x++)
                     {
                         if (gridCopy[y][x] != currentPlayer && IsCaught(x, y, circuit))
                         {
-                            if (gridCopy[y][x] > 3)
+
+                            if (gridCopy[y][x] > (totalPlayer + 1))
                             {
                                 bool caught = IsCaughtByNonSubCircuit(gridCopy, beginX, x, y);
 
                                 debugClass.caugth = caught;
+                                debugClass.tongaEto = true;
 
                                 if (!caught)
                                 {
                                     return false;
                                 }
                             }
-                            if (gridCopy[y][x] < 3)
+                            if (gridCopy[y][x] < (totalPlayer + 1))
                             {
                                 if (gridCopy[y][x] != 0)
                                 {
                                     countScore++;
                                 }
                                 secondValidation = true;
-                                gridCopy[y][x] += 3;
+                                gridCopy[y][x] += (totalPlayer  + 1);
                             }
                         }
                     }
