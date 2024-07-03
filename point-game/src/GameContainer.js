@@ -4,6 +4,10 @@ import Page from './Page';
 const GameContainer = ({ numRows, numCols, plateau, setPlateau, totalPlayers }) => {
     const reflexionTime = 5;
     const [timeElapsed, setTimeElapsed] = useState(reflexionTime);
+    const [timerPaused, setTimerPaused] = useState(false);
+    const [startPause, setStartPause] = useState(0);
+    const [endPause, setEndPause] = useState(0);
+    const [timePaused, setTimePaused] = useState(0);
 
     const colorsHex = {
         Rouge: "#FF0000",
@@ -24,28 +28,24 @@ const GameContainer = ({ numRows, numCols, plateau, setPlateau, totalPlayers }) 
 
     for (let i = 1; i <= totalPlayers; i++) {
         joueurs.push({ name: localStorage.getItem("nomJoueur" + i), color: colorsHex[localStorage.getItem("couleurJoueur" + i)] });
-        //console.log(joueurs[i-1].color)
     }
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setTimeElapsed(prevTime => prevTime - 1);
+            if (!timerPaused) {
+                setTimeElapsed(prevTime => prevTime - 1);
+            }
         }, 1000);
 
         return () => clearInterval(interval);
-    }, []);
+    }, [timerPaused]);
 
-
-    useEffect(() => { 
+    useEffect(() => {
         const gameContainer = document.querySelector(".game-container");
         gameContainer.style.backgroundColor = joueurs[parseInt(localStorage.getItem("currentPlayer")) - 1].color + "BF";
         if (timeElapsed <= 0) {
             setTimeElapsed(reflexionTime);
-            //console.log(localStorage.getItem("currentPlayer"));
-            //console.log("tonga eto ", joueurs[parseInt(localStorage.getItem("currentPlayer")) - 1].color + "BF");
-            //console.log("tonga eto2 ", joueurs[parseInt(localStorage.getItem("currentPlayer")) - 1].color);
             gameContainer.style.backgroundColor = joueurs[parseInt(localStorage.getItem("currentPlayer")) - 1].color + "BF";
-
         }
         const resetLocalStorage = localStorage.getItem('reset') === 'true';
         if (resetLocalStorage) {
@@ -54,6 +54,16 @@ const GameContainer = ({ numRows, numCols, plateau, setPlateau, totalPlayers }) 
         }
     }, [timeElapsed, joueurs]);
 
+    const handlePauseResume = () => {
+        if (timerPaused) {
+            setTimerPaused(false);
+            setEndPause(Date.now());
+            setTimePaused(prevTimePaused => prevTimePaused + Math.round((Date.now() - startPause) / 1000));
+        } else {
+            setTimerPaused(true);
+            setStartPause(Date.now());
+        }
+    };
 
     return (
         <div className="game-container">
@@ -66,21 +76,32 @@ const GameContainer = ({ numRows, numCols, plateau, setPlateau, totalPlayers }) 
             <div id="menu">
                 <button id="quitter-button">Quitter</button>
                 <button id="finish-button">Terminer</button>
-                <button id="pauseResumeButton">Pause</button>
+                <button id="pauseResumeButton" onClick={handlePauseResume}>
+                    {timerPaused ? "Reprendre" : "Pause"}
+                </button>
             </div>
 
             <div className="canvas-wrapper" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                 <div className="canvas-container" style={{
-                    width: '700px', // Largeur fixe
-                    height: '60vh', // Hauteur fixe
-                    overflow: 'auto', // Ajouter des barres de défilement si le contenu dépasse
-                    border: '1px solid #ddd', // Bordure pour mieux visualiser le conteneur
-                    padding: '10px', // Espacement interne pour l'esthétique
-                    display: 'flex', // Utiliser Flexbox pour le centrage
-                    justifyContent: 'center', // Centrer horizontalement
-                    marginRight: '20px' // Espacement entre les éléments
+                    width: '700px',
+                    height: '60vh',
+                    overflow: 'auto',
+                    border: '1px solid #ddd',
+                    padding: '10px',
+                    justifyContent: 'center',
+                    marginRight: '20px'
                 }}>
-                    <Page numRows={numRows - 1} numCols={numCols - 1} plateau={plateau} setPlateau={setPlateau} timeElapsed={timeElapsed} totalPlayers={totalPlayers} />
+                    <div style={{ display: timerPaused ? 'none' : 'block' }} >
+                        <Page
+                            numRows={numRows - 1}
+                            numCols={numCols - 1}
+                            plateau={plateau}
+                            setPlateau={setPlateau}
+                            timeElapsed={timeElapsed}
+                            totalPlayers={totalPlayers}
+                        />
+                    </div>
+                    
                 </div>
             </div>
 

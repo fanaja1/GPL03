@@ -4,7 +4,6 @@ import { Stage, Layer, Line, Circle } from 'react-konva';
 
 const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed }) => {
 
-
     const [currentPlayer, setCurrentPlayer] = useState(1);
 
     React.useEffect(() => {
@@ -98,7 +97,7 @@ const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed
                 );
             }
         }
-
+        
         return lines;
     };
 
@@ -256,6 +255,7 @@ const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed
             // Appel de la fonction avec les données à envoyer
             sendDataToServer(plateau, { x: newX, y: newY });
             //setCurrentPlayer(currentPlayer % totalPlayers + 1); 
+
 
         }
     };
