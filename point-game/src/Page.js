@@ -250,13 +250,46 @@ const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed
             // Mettre à jour l'état plateau avec la nouvelle matrice
             setPlateau(plateau);
             //console.log("x", newX, " y", newY);
-            //console.log(plateau, " cp ", currentPlayer);
-
-            // Appel de la fonction avec les données à envoyer
-            sendDataToServer(plateau, { x: newX, y: newY });
-            //setCurrentPlayer(currentPlayer % totalPlayers + 1); 
 
 
+            handlePlayerMove(plateau, newX, newY);
+
+        }
+    };
+    const handlePlayerMove = async (plateau, newX, newY, currentPlayer, totalPlayers) => {
+        try {
+            // Appel de la fonction avec les données à envoyer et attendre qu'elle se termine
+            let cP = await sendDataToServer(plateau, { x: newX, y: newY });
+
+            // Mettre à jour le joueur courant
+            // setCurrentPlayer(currentPlayer % totalPlayers + 1);
+
+            console.log("cp", cP);
+            if (cP === 2) {
+                console.log("tonga eto");
+                const iaPoint = await iaTurn(plateau, { x: newX, y: newY });
+                console.log(iaPoint);
+                //await sendDataToServer(plateau, iaPoint);
+            }
+        } catch (error) {
+            console.error("Erreur lors de la gestion du mouvement du joueur:", error);
+        }
+    };
+
+    const iaTurn = async (plateau, dernierPoint) => {
+        try {
+            const response = await axios.put("http://localhost:7001/api/Game/IA", {
+                CircuitList: playersCircuitsList,
+                plateau: plateau,
+                dernierPoint: dernierPoint,
+                currentPlayer: currentPlayer
+            });
+
+            return response.data;
+
+
+        } catch (error) {
+            console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);
         }
     };
 
@@ -270,7 +303,7 @@ const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed
             });
 
             //console.log(response.data);
-            setCurrentPlayer(response.data.currentPlayer);
+            await setCurrentPlayer(response.data.currentPlayer);
             localStorage.setItem("currentPlayer", response.data.currentPlayer);
 
             const circuitData = response.data.circuitList.map(playerCircuits =>
@@ -286,7 +319,7 @@ const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed
             // Mettez à jour l'état avec la nouvelle structure de données
             setPlateau(plateauData);
 
-
+            return response.data.currentPlayer;
         } catch (error) {
             console.error('Une erreur s\'est produite lors de l\'envoi des données au serveur :', error);
         }

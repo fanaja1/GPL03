@@ -6,6 +6,12 @@ using System.Text;
 
 namespace Back.Controllers
 {
+    struct pos
+    {
+        public int x;
+        public int y;
+    }
+
     [Route("api/[controller]")]
     [ApiController]
     public class GameController : ControllerBase
@@ -83,6 +89,15 @@ namespace Back.Controllers
             //Debugging***********************************/
             public DebugClass debug { get; set; }
             public int score { get; internal set; }
+        }
+
+        [HttpPut]
+        [Route("IA")]
+        public IActionResult ProcesData([FromBody] PlateauData data)
+        {
+            IA ia = new IA();
+            //ia.getnextMove(data.Plateau,-99999, 99999,true,4);
+            return Ok("okkkkkkkkkk");
         }
 
         [HttpPut]

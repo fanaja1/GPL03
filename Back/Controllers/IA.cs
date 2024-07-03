@@ -8,7 +8,7 @@ struct pos
 }
 struct noeud
 {
-    public int[,] tab; 
+    public int[][] tab; 
     public int x; 
     public int y;
     public int score;
@@ -29,7 +29,7 @@ class IA
 
     //alpha -infini
     //beta +infini
-    public int alpha_beta(int[,] state,int alpha, int beta,bool isMaximising, int depth)
+    public int alpha_beta(int[][] state,int alpha, int beta,bool isMaximising, int depth)
     {
         if(TerminalTest(state) || depth == 0) return Evaluate(state);
 
@@ -96,27 +96,27 @@ class IA
         }
     }
 
-    public bool TerminalTest(int[,] state){
-        for(int i=0;i<state.GetLength(0);i++)
+    public bool TerminalTest(int[][] state){
+        for(int i=1;i<state.GetLength(0)-1;i++)
         {
-            for(int j=0;j<state.GetLength(1);j++)
+            for(int j=1;j<state.GetLength(1)-1;j++)
             {
-                if(state[i,j] == 0) return false; 
+                if(state[i][j] == 0) return false; 
             }
         }
         return true;
     }
-    public List<noeud> successors(int[,] state,ref bool min)
+    public List<noeud> successors(int[][] state,ref bool min)
     {
         List<noeud> list = new List<noeud>();
         bool end = false;
-        for(int i=0; i<state.GetLength(0);i++){
-            for(int j=0;j<state.GetLength(1);j++){
-                if(state[i,j] == 0)
+        for(int i=1; i<state.GetLength(0) - 1;i++){
+            for(int j=1;j<state.GetLength(1) - 1;j++){
+                if(state[i][j] == 0)
                 {
                     noeud n;
-                    int[,] newState = (int[,]) state.Clone();
-                    newState[i,j] = min ? 2 : 1;
+                    int[][] newState = (int[][]) state.Clone();
+                    newState[i][j] = min ? 2 : 1;
                     n.tab = newState;
                     n.x = i;
                     n.y = j;
@@ -132,22 +132,22 @@ class IA
         return list;
     }
 
-    public int Evaluate(int[,] state)
+    public int Evaluate(int[][] state)
     {
         int maxPlayer = 1; // Le joueur maximisant (IA)
         int minPlayer = 2; // Le joueur minimisant (adversaire)
         int score = 0;
         
-        for (int i = 0; i < state.GetLength(0); i++)
+        for (int i = 1; i < state.GetLength(0) - 1; i++)
         {
-            for (int j = 0; j < state.GetLength(1); j++)
+            for (int j = 1; j < state.GetLength(1) - 1; j++)
             {
-                if (state[i, j] == maxPlayer)
+                if (state[i][j] == maxPlayer)
                 {
                     // Points pour le joueur max
                     score += EvaluatePosition(i, j, state, maxPlayer, minPlayer);
                 }
-                else if (state[i, j] == minPlayer)
+                else if (state[i][j] == minPlayer)
                 {
                     // Points le joueur min
                     score -= EvaluatePosition(i, j, state, minPlayer, maxPlayer);
@@ -159,7 +159,7 @@ class IA
     }   
     //erreur lors de l'arret de jeu c'est a dire lorseque l'arbre est fini
 
-    private int EvaluatePosition(int x, int y, int[,] state, int player, int opponent)
+    private int EvaluatePosition(int x, int y, int[][] state, int player, int opponent)
     {
         int score = 0;
 
@@ -174,9 +174,9 @@ class IA
         {
             int nx = x + dx[i];
             int ny = y + dy[i];
-            if (nx >= 0 && ny >= 0 && nx < state.GetLength(0) && ny < state.GetLength(1))
+            if (nx >= 1 && ny >= 1 && nx < state.GetLength(0) - 1 && ny < state.GetLength(1) - 1)
             {
-                if (state[nx, ny] == opponent)
+                if (state[nx][ny] == opponent)
                 {
                     score += 10;
                 }
@@ -186,7 +186,7 @@ class IA
         return score;
     }
 
-    public void getnextMove(int[,] state,int alpha, int beta,bool isMaximising, int depth)
+    public void getnextMove(int[][] state,int alpha, int beta,bool isMaximising, int depth)
     {
         int valeurFinal = this.alpha_beta(state,alpha,beta,isMaximising,depth);
         foreach(var child in noeuds[0])
