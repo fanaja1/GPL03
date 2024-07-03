@@ -1,0 +1,93 @@
+* {
+    padding: 0;
+    margin: 0;
+    text-decoration: none;
+}
+
+@font-face {
+    font-family: 'Buka Bird';
+    src: url('../fonts/Buka\ Bird.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'DatBox';
+    src: url('../fonts/DatBox.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f5f3db;
+}
+
+.accueil-container {
+    text-align: center;
+    position: relative;
+    transform: translateY(-15%);
+    z-index: 2;
+}
+
+.accueil-container h1 {
+    font-family: 'DatBox', sans-serif;
+    font-size: 10em;
+    padding: 5px 10px;
+    border-radius: 20px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.button-container {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 20px;
+}
+
+a {
+    font-family: 'Buka Bird', sans-serif;
+    font-size: 30px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 10px 20px;
+    border: 1px dashed #000;
+}
+
+.left-triangle,
+.right-triangle {
+    width: 0;
+    height: 0;
+    border-style: solid;
+    position: relative;
+}
+
+.left-triangle {
+    border-width: 15px 15px 15px 0;
+    border-color: transparent #000 transparent transparent;
+    margin-right: 10px;
+}
+
+.right-triangle {
+    border-width: 15px 0 15px 15px;
+    border-color: transparent transparent transparent #000;
+    margin-left: 10px;
+}
+
+#br {
+    display: none;
+}
+
+@media (max-width: 1115px) {
+    #br{
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .accueil-container h1 {
+        font-size: 6.8em;
+    }
+}

@@ -1,0 +1,16 @@
+#losange-container {
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+}
+
+.losange {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(45deg);
+    display: none;
+}

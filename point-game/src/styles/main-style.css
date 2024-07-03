@@ -1,0 +1,186 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
+@font-face {
+    font-family: 'Mooli';
+    src: url('../fonts/Mooli-Regular.ttf') format('truetype');
+}
+
+body {
+    display: flex;
+    font-family: 'Mooli', sans-serif;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #f2f2f2;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    width: 90%;
+    max-width: 900px;
+    height: 95%;
+    overflow: hidden;
+}
+
+.score-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    width: 100%;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 0px rgba(0, 0, 0, 0.1);
+}
+
+.score {
+    font-size: 1.2em;
+    background-color: #f2f2f2;
+    font-weight: bold;
+    color: #333;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#timer {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #555;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#menu {
+    display: flex;
+    justify-content: space-around;
+    background-color: #f2f2f2;
+    padding: 5px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3px;
+}
+
+button {
+    font-size: 1em;
+    font-weight: bold;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-grow: 1;
+    margin: 0 5px;
+}
+
+#quitter-button {
+    background-color: #ff5722;
+    color: #fff;
+}
+
+#finish-button {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+#pauseResumeButton {
+    background-color: #2196f3;
+    color: #fff;
+}
+
+.current-turn {
+    font-size: 1.1em;
+    font-weight: bold;
+    background-color: #fff;
+    padding: 3px 5px;
+    border-radius: 5px;
+    color: #555;
+    margin-top: 20px;
+}
+
+.zoom-slider {
+    width: 100%;
+    margin-top: 10px;
+    height: 6px;
+    border-radius: 3px;
+    background: #ccc;
+    outline: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+    cursor: pointer;
+}
+
+.zoom-slider::-webkit-slider-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4caf50;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.zoom-slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #4caf50;
+    appearance: none;
+}
+
+.canvas-wrapper {
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    min-height: 70vh;
+    border-radius: 10px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+#gridCanvas {
+    background-color: #fff;
+}
+
+.canvas-container {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+}
+
+.canvas-container::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+    background-color: #f2f2f2;
+}
+
+.canvas-container::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 4px;
+}
+
+.canvas-container::-webkit-scrollbar-track {
+    background-color: #f2f2f2;
+}
+
+@media (max-width: 768px) {
+    .score {
+        font-size: 1em;
+    }
+
+    .current-turn {
+        font-size: 1em;
+    }
+}

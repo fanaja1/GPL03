@@ -2,9 +2,18 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Stage, Layer, Line, Circle } from 'react-konva';
 
-const Page = ({ numRows, numCols, plateau, setPlateau }) => {
+const Page = ({ totalPlayers, numRows, numCols, plateau, setPlateau, timeElapsed }) => {
+
+
     const [currentPlayer, setCurrentPlayer] = useState(1);
-    let totalPlayers = 3;
+
+    React.useEffect(() => {
+        if (timeElapsed <= 0) {
+            setCurrentPlayer(currentPlayer % totalPlayers + 1);
+            localStorage.setItem("currentPlayer", currentPlayer % totalPlayers + 1);
+            //console.log('turn', currentPlayer % totalPlayers + 1);
+        }
+    }, [timeElapsed, currentPlayer, totalPlayers]);
 
     const [height, setHeight] = useState(((450 / numRows) < 30) ? 30 * numRows : 450);
     const [scale, setScale] = useState(height / numRows);
@@ -214,8 +223,6 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     // ************************************************************************************************************* //
     const handleClick = (event) => {
         const { x, y } = event.target.getStage().getPointerPosition();
-        const { x: closestX, y: closestY } = getClosestIntersection(x, y);
-
 
         const newX = Math.round((x - marginLeft) / scale) + 1; // Calcul de la colonne la plus proche
         const newY = Math.round((y - marginTop) / scale) + 1; // Calcul de la ligne la plus proche
@@ -223,6 +230,10 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
         //console.log("ix", newX, " iy", newY);
 
         if (isValidPoint(x, y) && plateau[newY][newX] === 0) {
+            //reset temps de reflexion
+            localStorage.setItem('reset', 'true');
+            //console.log(localStorage.getItem('reset'));
+
             // Ajouter le point au joueur courant
             const updatedPlayerPoints = [...playerPoints];
             updatedPlayerPoints[currentPlayer - 1].push({ x: newX - 1, y: newY - 1 });
@@ -259,7 +270,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
             });
 
             //console.log(response.data);
-            setCurrentPlayer(response.data.currentPlayer); 
+            setCurrentPlayer(response.data.currentPlayer);
+            localStorage.setItem("currentPlayer", response.data.currentPlayer);
 
             const circuitData = response.data.circuitList.map(playerCircuits =>
                 playerCircuits.map(circuit => circuit.map(point => ({ x: point.x, y: point.y})))
@@ -327,6 +339,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 Page.defaultProps = {
     numRows: 22,
     numCols: 10,
+    totalPlayers: 2
 };
 
 export default Page;
