@@ -24,20 +24,35 @@ class IA
 
         //if( TerminalTest(state) || depth == 1 ){this.action.x = }
 
+        List<noeud> l = new List<noeud>();
+
         if(isMaximising)
         {
             int maxEval = -INFINI;
-            List<noeud> l = successors(state,ref isMaximising);
+
             foreach(var child in successors(state,ref isMaximising))
             {
                 int eval = alpha_beta(child.tab, alpha, beta, false, depth - 1);
                 maxEval = Math.Max(maxEval, eval);
-                //assignation de la valeur d'un noeud
                 //determination de qui est maximum
                 alpha = Math.Max(alpha, eval);
+                //assignation de la valeur d'un noeud
+                noeud n;
+                n.x = child.x;
+                n.y = child.y;
+                n.tab = child.tab;
+                n.score = maxEval;
+                l.Add(n);
+                /////////////////////
+                ///
+
                 if (beta <= alpha)
                     break;
             }
+
+            Console.WriteLine("mety neny maximum");
+            noeuds.Add(l);
+
             return maxEval;
         }
         else
@@ -47,11 +62,25 @@ class IA
             {
                 int eval = alpha_beta(child.tab, alpha, beta, true, depth - 1);
                 minEval = Math.Min(minEval, eval);
+                //assignation de la valeur d'un noeud
+                noeud n;
+                n.x = child.x;
+                n.y = child.y;
+                n.tab = child.tab;
+                n.score = minEval;
+                l.Add(n);
+                /////////////////////
+                ///
                 //determination de qui est minimum
                 beta = Math.Min(beta, eval);
                 if (beta <= alpha)
                     break;
             }
+
+            Console.WriteLine("mety neny minimum");
+
+            noeuds.Add(l);
+
             return minEval;
         }
     }
@@ -145,9 +174,23 @@ class IA
 
         return score;
     }
+
+    public void getnextMove(int[,] state,int alpha, int beta,bool isMaximising, int depth)
+    {
+        int valeurFinal = this.alpha_beta(state,alpha,beta,isMaximising,depth);
+        foreach(var child in noeuds[0])
+        {
+            if(child.score == valeurFinal)
+            {
+                action.x = child.x;
+                action.y = child.y;
+                Console.WriteLine(" x : " + child.x + " | y : " + child.y );
+            }
+        }
+    }
     /*
         exemple
-        
+
             tab = new Int32[20,20];
             for(int i = 0;i<20;i++){
                 for(int j =0;i<20;i++){
