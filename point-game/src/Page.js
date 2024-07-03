@@ -4,44 +4,54 @@ import { Stage, Layer, Line, Circle } from 'react-konva';
 
 const Page = ({ numRows, numCols, plateau, setPlateau }) => {
     const [currentPlayer, setCurrentPlayer] = useState(1);
-    let totalPlayers = 2;
+    let totalPlayers = 3;
 
-    const width = 450;
-    const height = 450;
+    const [height, setHeight] = useState(((450 / numRows) < 30) ? 30 * numRows : 450);
+    const [scale, setScale] = useState(height / numRows);
+    const [width, setWidth] = useState(numCols * scale);
 
-    const [marginTop, setMarginTop] = useState(100);
-    const [marginBottom, setMarginBottom] = useState(60);
-    const [marginLeft, setMarginLeft] = useState(120);
-    const [marginRight, setMarginRight] = useState(40);
-    const [radius, setRadius] = useState(5);
+    const [marginTop, setMarginTop] = useState(scale * 3);
+    const [marginBottom, setMarginBottom] = useState(scale * 2);
+    const [marginLeft, setMarginLeft] = useState(scale * 4);
+    const [marginRight, setMarginRight] = useState(scale * 4 / 5);
+    const [radius, setRadius] = useState(scale / 7);
 
-    let a = width / numCols;
-    let b = height / numRows;
     //let s = a > b ? Math.floor(a) : Math.floor(a); // Échelle pour les graduations
 
-    const [scale, setScale] = useState(a > b ? Math.floor(a) : Math.floor(a));
-    const [echelle, setEchelle] = useState(1); // Nouvelle variable echelle à 1 par défaut
+    //setWidth(marginLeft + numCols * scale + marginRight);
+    const [echelle, setEchelle] = useState(1.1); // Nouvelle variable echelle à 1 par défaut
     const [scrolling, setScrolling] = useState(false); // État pour suivre si le défilement est actif
 
     // Gestionnaire d'événements pour la molette
     const handleWheel = (event) => {
         event.evt.preventDefault(); // Utiliser l'événement natif pour prévenir le comportement par défaut
+        const molette = event.evt.deltaY;
+        console.log("molette", molette, " ", (molette < 0));
 
-        setEchelle(event.evt.deltaY < 0 ? 1.1 : 1 / 1.1);
+        const newEchelle = (molette < 0) ? 1.1 : (1 / 1.1);
+        setEchelle(newEchelle);
 
-        if ((scale * echelle) > 20) {
-            setScale((prevScale) => Math.round(prevScale * echelle));
+        console.log("cell", scale, "radius", radius, "echelle", echelle, "newE", newEchelle);
+
+
+        if (((scale > 30) || molette < 0) && ((scale < 115) || molette > 0)) {
+            const newScale = Math.round(scale * echelle);
+            setScale(newScale);
             // Ajuster les marges en fonction de l'échelle
-            setMarginTop((prevMarginTop) => Math.round(prevMarginTop * echelle));
-            setMarginBottom((prevMarginBottom) => Math.round(prevMarginBottom * echelle));
-            setMarginLeft((prevMarginLeft) => Math.round(prevMarginLeft * echelle));
-            setMarginRight((prevMarginRight) => Math.round(prevMarginRight * echelle));
-            setRadius((prevRadius) => prevRadius * echelle);
+            setMarginTop((prevMarginTop) => Math.round(prevMarginTop * newEchelle));
+            setMarginBottom((prevMarginBottom) => Math.round(prevMarginBottom * newEchelle));
+            setMarginLeft((prevMarginLeft) => Math.round(prevMarginLeft * newEchelle));
+            setMarginRight((prevMarginRight) => Math.round(prevMarginRight * newEchelle));
+            setRadius((prevRadius) => prevRadius * newEchelle);
+            setWidth(numCols * newScale);
+            setHeight(numRows * newScale);
         }
         // Indiquer que le défilement est actif
         setScrolling(true);
 
-        console.log("cell", scale, "radius", radius);
+        console.log(marginTop, "-", marginRight, "-", marginBottom, "-", marginLeft);
+        console.log("width", width, " height", height);
+        
     };
     //scale = 50;
 
@@ -71,7 +81,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                         key={`player-${playerIndex}-circuit-${circuitIndex}`}
                         points={points}
                         stroke={color}
-                        strokeWidth={2}
+                        strokeWidth={radius * 2 / 5}
                         closed={true} // Fermer le circuit
                         lineJoin="round"
                         lineCap="round"
@@ -85,17 +95,79 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
     const renderHorizontalLines = () => {
         const lines = [];
-        for (let i = 0; i <= numRows; i++) {
+
+        // Espacement entre les lignes principales
+        const spacing = scale;
+        const startY = marginTop;
+        const totalWidth = marginLeft + width + marginRight; // Largeur totale ajustée
+
+        // Ajouter trois lignes intermédiaires au-dessus de la première ligne principale
+        const initialIncrement = spacing / 4;
+        for (let k = 1; k <= 3; k++) {
+            const aboveFirstYPosition = startY - k * initialIncrement;
+
             lines.push(
                 <Line
-                    key={`hline${i}`}
-                    points={[0, marginTop + i * scale, marginLeft + width + marginRight, marginTop + i * scale]}
-                    stroke="#ddd"
+                    key={`hline-above-first-${k}`}
+                    points={[0, aboveFirstYPosition, totalWidth, aboveFirstYPosition]}
+                    stroke="#4455C9DD"
+                    strokeWidth={radius / 8} // Ligne plus fine pour les lignes intermédiaires
                 />
             );
         }
+
+        for (let i = 0; i <= numRows; i++) {
+            // Position de la ligne principale
+            const mainYPosition = startY + i * spacing;
+
+            // Ajouter la ligne principale
+            lines.push(
+                <Line
+                    key={`hline-main-${i}`}
+                    points={[0, marginTop + i * scale, marginLeft + width + marginRight, marginTop + i * scale]}
+                    stroke="#4455C9DD"
+                    strokeWidth={radius / 4} // Ajustement de l'épaisseur de la ligne
+                />
+            );
+
+            // Ajouter trois lignes intermédiaires entre la ligne actuelle et la suivante
+            if (i < numRows) {
+                const increment = spacing / 4; // Espacement des lignes intermédiaires
+
+                for (let j = 1; j <= 3; j++) {
+                    const intermediateYPosition = mainYPosition + j * increment;
+
+                    lines.push(
+                        <Line
+                            key={`hline-intermediate-${i}-${j}`}
+                            points={[0, intermediateYPosition, totalWidth, intermediateYPosition]}
+                            stroke="#4455C9DD"
+                            strokeWidth={radius / 8} // Ligne plus fine pour les lignes intermédiaires
+                        />
+                    );
+                }
+            }
+        }
+
+        // Ajouter deux lignes intermédiaires en dessous de la dernière ligne principale
+        const belowLastYPosition = startY + numRows * spacing;
+        for (let m = 1; m <= 2; m++) {
+            const belowLastYIncrement = belowLastYPosition + m * initialIncrement;
+
+            lines.push(
+                <Line
+                    key={`hline-below-last-${m}`}
+                    points={[0, belowLastYIncrement, totalWidth, belowLastYIncrement]}
+                    stroke="#4455C9DD"
+                    strokeWidth={radius / 8} // Ligne plus fine pour les lignes intermédiaires
+                />
+            );
+        }
+
         return lines;
     };
+
+
 
     const renderVerticalLines = () => {
         const lines = [];
@@ -104,7 +176,8 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                 <Line
                     key={`vline${i}`}
                     points={[marginLeft + i * scale, 0, marginLeft + i * scale, marginTop + height + marginBottom]}
-                    stroke="#ddd"
+                    stroke={i === 0 ? "#FF0000CC" : "#4455C9DD"}
+                    strokeWidth={radius / 4}
                 />
             );
         }
@@ -221,10 +294,6 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
 
                 {drawClosedCircuit()}
 
-                {/* Axes */}
-                <Line points={[0, 0, marginLeft + width + marginRight, 0]} stroke="black" />
-                <Line points={[0, 0, 0, marginTop + height + marginBottom]} stroke="black" />
-
                 {/* Rendu des points par joueur */}
                 {playerPoints.map((points, playerIndex) =>
                     points.map((point, index) => (
@@ -243,7 +312,7 @@ const Page = ({ numRows, numCols, plateau, setPlateau }) => {
                     <Circle
                         x={mousePos.x}
                         y={mousePos.y}
-                        radius={10}
+                        radius={radius * 2}
                         fill={currentPlayer === 1 ? 'red' : currentPlayer === 2 ? 'blue' : currentPlayer === 3 ? 'green' : 'black'}
                         opacity={0.5} // Opacité de 50%
                     />
