@@ -22,8 +22,6 @@ class IA
     {
         if(TerminalTest(state) || depth == 0) return Evaluate(state);
 
-        //if( TerminalTest(state) || depth == 1 ){this.action.x = }
-
         List<noeud> l = new List<noeud>();
 
         if(isMaximising)
@@ -48,10 +46,12 @@ class IA
 
                 if (beta <= alpha)
                     break;
+                
             }
 
-            Console.WriteLine("mety neny maximum");
+            //Console.WriteLine("mety neny maximum");
             noeuds.Add(l);
+            //Console.WriteLine(maxEval);
 
             return maxEval;
         }
@@ -77,9 +77,10 @@ class IA
                     break;
             }
 
-            Console.WriteLine("mety neny minimum");
+            //Console.WriteLine("mety neny minimum");
 
             noeuds.Add(l);
+            //Console.WriteLine(minEval);
 
             return minEval;
         }
@@ -95,36 +96,45 @@ class IA
         }
         return true;
     }
-    public List<noeud> successors(int[,] state,ref bool min)
+    public List<noeud> successors(int[,] state,ref bool isMaximising)
     {
         List<noeud> list = new List<noeud>();
-        bool end = false;
+        int opponent = isMaximising ? 1 : 2;
+
+        int[] dx = { -1, -1, -1, 0, 0, 1, 1, 1 };
+        int[] dy = { -1, 0, 1, -1, 1, -1, 0, 1 };
+
         for(int i=0; i<state.GetLength(0);i++){
             for(int j=0;j<state.GetLength(1);j++){
-                if(state[i,j] == 0)
+                if (state[i, j] == opponent)
                 {
-                    noeud n;
-                    int[,] newState = (int[,]) state.Clone();
-                    newState[i,j] = min ? 2 : 1;
-                    n.tab = newState;
-                    n.x = i;
-                    n.y = j;
-                    n.score = 0;
-                    end = true;
-                    list.Add(n);
-                    break;
-                }
+                    for (int k = 0; k < 8; k++)
+                    {
+                        int nx = i + dx[k];
+                        int ny = j + dy[k];
+                        if (nx >= 0 && ny >= 0 && nx < state.GetLength(0) && ny < state.GetLength(1) && state[nx, ny] == 0)
+                        {
+                            int[,] newState = (int[,]) state.Clone();
+                            newState[nx, ny] = isMaximising ? 2 : 1;
+
+                            noeud n;
+                            n.tab = newState;
+                            n.x = nx;
+                            n.y = ny;
+                            n.score = 0;
+                            list.Add(n);
+                        }
+                    }
+                }               
             }
-            if(end) break;
         }
-        min = !min;
         return list;
     }
 
     public int Evaluate(int[,] state)
     {
-        int maxPlayer = 1; // Le joueur maximisant (IA)
-        int minPlayer = 2; // Le joueur minimisant (adversaire)
+        int maxPlayer = 2; // Le joueur maximisant (IA)
+        int minPlayer = 1; // Le joueur minimisant (adversaire)
         int score = 0;
         
         for (int i = 0; i < state.GetLength(0); i++)
@@ -153,6 +163,7 @@ class IA
         int score = 0;
 
         // centre (éventuellement stratégique)
+
         int center = state.GetLength(0) / 2;
         score += (center - Math.Abs(center - x)) + (center - Math.Abs(center - y));
 
@@ -168,7 +179,37 @@ class IA
                 if (state[nx, ny] == opponent)
                 {
                     score += 10;
+                    if(nx > 0 && ny > 0 && nx < state.GetLength(0)-1 && ny < state.GetLength(1)-1)
+                    {
+                        if((state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[2],ny+dy[2]] == player) 
+                        || (state[nx+dx[1],ny+dy[1]] == player && state[nx+dx[3],ny+dy[3]] == player)
+                        || (state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[3],ny+dy[3]] == player)
+                        || (state[nx+dx[2],ny+dy[2]] == player && state[nx+dx[3],ny+dy[3]] == player))
+                        {
+                            score+=10;
+                        }
+                        else if(((state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[2],ny+dy[2]] == player) && (state[nx+dx[2],ny+dy[2]] == player && state[nx+dx[3],ny+dy[3]] == player) && (state[nx+dx[3],ny+dy[3]] == player && state[nx+dx[1],ny+dy[1]] == player)) 
+                                || ((state[nx+dx[1],ny+dy[1]] == player && state[nx+dx[3],ny+dy[3]] == player) && (state[nx+dx[3],ny+dy[3]] == player && state[nx+dx[0],ny+dy[0]] == player) && (state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[2],ny+dy[2]] == player))
+                                || ((state[nx+dx[2],ny+dy[2]] == player && state[nx+dx[0],ny+dy[0]] == player) && (state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[1],ny+dy[1]] == player) && (state[nx+dx[1],ny+dy[1]] == player && state[nx+dx[3],ny+dy[3]] == player))
+                                || ((state[nx+dx[3],ny+dy[3]] == player && state[nx+dx[1],ny+dy[1]] == player) && (state[nx+dx[1],ny+dy[1]] == player && state[nx+dx[2],ny+dy[2]] == player) && (state[nx+dx[2],ny+dy[2]] == player && state[nx+dx[0],ny+dy[0]] == player)))
+                        {
+                            score += 50;
+                            Console.WriteLine("eto no antoniny");
+                        }else if((state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[2],ny+dy[2]] == player) 
+                                && (state[nx+dx[1],ny+dy[1]] == player && state[nx+dx[3],ny+dy[3]] == player)
+                                && (state[nx+dx[0],ny+dy[0]] == player && state[nx+dx[3],ny+dy[3]] == player)
+                                && (state[nx+dx[2],ny+dy[2]] == player && state[nx+dx[3],ny+dy[3]] == player))
+                        {
+                            score += 100;
+                            Console.WriteLine("eto ny betsaka indrindra");
+                        }
+                        else
+                        {
+                            score += 20;
+                        }
+                    }
                 }
+                
             }
         }
 
@@ -177,7 +218,11 @@ class IA
 
     public void getnextMove(int[,] state,int alpha, int beta,bool isMaximising, int depth)
     {
+        noeuds.Clear();
         int valeurFinal = this.alpha_beta(state,alpha,beta,isMaximising,depth);
+        bool smax = false;
+        int i = 0;
+        Console.WriteLine(valeurFinal);
         foreach(var child in noeuds[0])
         {
             if(child.score == valeurFinal)
@@ -185,8 +230,22 @@ class IA
                 action.x = child.x;
                 action.y = child.y;
                 Console.WriteLine(" x : " + child.x + " | y : " + child.y );
+                Console.WriteLine(child.score);
+                smax = false;
+                break;
             }
+            smax = true;
+            i++;
+            Console.WriteLine("eto le score " + child.score);
         }
+        if(smax)
+        {
+            //if(state[noeuds[0][i-1].x,noeuds[0][i-1].y] != 0)
+            action.x = noeuds[0][i-1].x;
+            action.y = noeuds[0][i-1].y;
+        }
+        Console.WriteLine(" x : " + action.x + " | y : " + action.y );
+
     }
     /*
         exemple
