@@ -30,7 +30,7 @@ function PlayerSettings({ player, playerName, setPlayerName, selectedColor, setS
       <h2 className="text">Joueur {player}</h2>
       {player > 1 && (
         <div className="bot-option">
-          <input type="checkbox" id={`player${player}-bot`} name={`player${player}-type`} value="bot" />
+          <input type="checkbox" id={`player${player}-bot`} name={`player${player}-type`} value={player} />
           <label htmlFor={`player${player}-bot`}>Bot</label>
         </div>
       )}
@@ -175,7 +175,26 @@ function Settings({ setNumRows, setNumCols, setSwitchScreen, totalPlayers, setTo
 
   const canStartGame = playerColors.slice(0, totalPlayers).every(color => color !== '') && new Set(playerColors.slice(0, totalPlayers)).size === totalPlayers;
 
-  const startGame = () => {
+    const startGame = () => {
+    const bots = []; // Crée un tableau pour stocker les numéros des bots sélectionnés
+
+    // Parcours tous les éléments checkbox pour les bots
+    const checkboxes = document.querySelectorAll('input[type="checkbox"][name^="player"]');
+
+    checkboxes.forEach((checkbox) => {
+        if (checkbox.checked) {
+            // Si la case est cochée, récupère son numéro (assurez-vous que chaque checkbox a une valeur correspondante)
+            const botNumber = checkbox.value; // Assurez-vous que chaque checkbox a une valeur correspondant au numéro du bot
+            bots.push(botNumber); // Ajoute le numéro au tableau
+        }
+    });
+
+    // Joindre les numéros en une seule chaîne
+    const botString = bots.join('');
+
+    // Stocke la chaîne dans localStorage
+        localStorage.setItem("bot", botString);
+        console.log(botString + "bot " + localStorage.getItem("bot"));
 
     // Set player names and colors in localStorage
     for (let i = 0; i < totalPlayers; i++) {

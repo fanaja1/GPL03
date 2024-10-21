@@ -359,15 +359,19 @@ const Page = ({ setZoomSlider, zoomSlider, playersScore, setPlayersScore, height
             // Appel de la fonction avec les donn�es � envoyer et attendre qu'elle se termine
             let cP = await sendDataToServer(plateau, { x: newX, y: newY });
 
-            // console.log("cp", cP);
-            // if (cP.currentPlayer === 2 && count < 1) {
-            //     console.log("tonga eto");
-            //     const iaPoint = await iaTurn(plateau, { y: newX, x: newY });
-            //     console.log(iaPoint);
-            //     // console.log(currentPlayer, "a");
-            //     handlePlayerMove(plateau, iaPoint.y, iaPoint.x, cP.currentPlayer, count);
-            //     // console.log(currentPlayer, "b");
-            // }
+             //console.log("cp", cP);
+            // Récupère la chaîne de caractères des bots depuis localStorage
+            const botsString = localStorage.getItem("bot") || "";
+
+            // Vérifie si cP.currentPlayer est un bot
+            if (botsString.includes(cP.currentPlayer.toString()) && count < 1) {
+                console.log("tonga eto " + cP.currentPlayer);
+
+                //const iaPoint = await iaTurn(plateau, { y: newX, x: newY });
+                //console.log(iaPoint);
+
+                //handlePlayerMove(plateau, iaPoint.y, iaPoint.x, cP.currentPlayer, count);
+            }
             
         } catch (error) {
             console.error("Erreur lors de la gestion du mouvement du joueur:", error);
