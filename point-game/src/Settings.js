@@ -77,6 +77,10 @@ function TimeSettings() {
 }
 
 function ModeSettings() {
+    if (localStorage.getItem("totalPlayers") <= 2) {
+        return;
+    }
+
   return (
     <div className="settings-section" id="mode">
       <label htmlFor="mode">Mode :</label>
@@ -180,6 +184,9 @@ function Settings({ setNumRows, setNumCols, setSwitchScreen, totalPlayers, setTo
       localStorage.setItem(`nomJoueur${i + 1}`, playerName);
       localStorage.setItem(`couleurJoueur${i + 1}`, playerColors[i]);
     }
+
+    const selectedMode = (localStorage.getItem("totalPlayers") <= 2) ? "normal" : document.querySelector("input[name='game-mode']:checked").value;
+    localStorage.setItem("gameMode", selectedMode);
 
     localStorage.setItem("tempsReflexion", document.querySelector("input[name='reflection-time']:checked").value);
     localStorage.setItem("dureeJeu", document.querySelector("input[name='game-time']:checked").value);

@@ -1,2 +1,2 @@
-cd E:\Projects\GPL3\point-game
+cd D:\GP\GPL3\point-game
 npm start -- --no-open

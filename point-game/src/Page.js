@@ -119,59 +119,66 @@ const Page = ({ setZoomSlider, zoomSlider, playersScore, setPlayersScore, height
     };
 
     const renderPlayerAreas = () => {
-        const areas = [];
-    
-        // Définir les propriétés des zones pour 4 joueurs
-        const player4Areas = [
-            { player: 1, x: marginLeft, y: marginTop, width: (7 * width) / 22, height: height, color: joueurs[0].color },
-            { player: 2, x: marginLeft + width - (7 * width) / 22, y: marginTop, width: (7 * width) / 22, height: height, color: joueurs[1].color },
-            { player: 3, x: marginLeft, y: marginTop, width: width, height: (7 * height) / 22, color: joueurs[2].color },
-            { player: 4, x: marginLeft, y: marginTop + height - (7 * height) / 22, width: width, height: (7 * height) / 22, color: joueurs[3].color },
-        ];
-    
-        // Définir les propriétés des zones pour 3 joueurs
-        const player3Areas = [
-            { player: 1, x: marginLeft, y: marginTop, width: width / 3, height: height, color: joueurs[0].color },  // Joueur 1 (gauche)
-            { player: 2, x: marginLeft + width / 3, y: marginTop, width: width / 3, height: height, color: joueurs[1].color }, // Joueur 2 (milieu)
-            { player: 3, x: marginLeft + (2 * width) / 3, y: marginTop, width: width / 3, height: height, color: joueurs[2].color }  // Joueur 3 (droite)
-        ];
-    
-        // Boucle pour ajouter les zones selon le nombre total de joueurs
-        if (totalPlayers === 4) {
-            player4Areas.forEach(({ player, x, y, width, height, color }) => {
-                if (currentPlayer === player) {
-                    areas.push(
-                        <Rect
-                            key={`player${player}-restricted-area`}
-                            x={x}
-                            y={y}
-                            width={width}
-                            height={height}
-                            fill={color}  // Couleur du joueur
-                            opacity={0.2} // Opacité pour visualiser
-                        />
-                    );
-                }
-            });
-        } else if (totalPlayers === 3) {
-            player3Areas.forEach(({ player, x, y, width, height, color }) => {
-                if (currentPlayer === player) {
-                    areas.push(
-                        <Rect
-                            key={`player${player}-restricted-area`}
-                            x={x}
-                            y={y}
-                            width={width}
-                            height={height}
-                            fill={color}  // Couleur du joueur
-                            opacity={0.2} // Opacité pour visualiser
-                        />
-                    );
-                }
-            });
+        const gameMode = localStorage.getItem("gameMode");
+
+        if (gameMode === "normal") {
+            return;
+        } else if (gameMode === "shared") {
+
+            const areas = [];
+
+            // Définir les propriétés des zones pour 4 joueurs
+            const player4Areas = [
+                { player: 1, x: marginLeft, y: marginTop, width: (7 * width) / 22, height: height, color: joueurs[0].color },
+                { player: 2, x: marginLeft + width - (7 * width) / 22, y: marginTop, width: (7 * width) / 22, height: height, color: joueurs[1].color },
+                { player: 3, x: marginLeft, y: marginTop, width: width, height: (7 * height) / 22, color: joueurs[2].color },
+                { player: 4, x: marginLeft, y: marginTop + height - (7 * height) / 22, width: width, height: (7 * height) / 22, color: joueurs[3].color },
+            ];
+
+            // Définir les propriétés des zones pour 3 joueurs
+            const player3Areas = [
+                { player: 1, x: marginLeft, y: marginTop, width: width / 3, height: height, color: joueurs[0].color },  // Joueur 1 (gauche)
+                { player: 2, x: marginLeft + width / 3, y: marginTop, width: width / 3, height: height, color: joueurs[1].color }, // Joueur 2 (milieu)
+                { player: 3, x: marginLeft + (2 * width) / 3, y: marginTop, width: width / 3, height: height, color: joueurs[2].color }  // Joueur 3 (droite)
+            ];
+
+            // Boucle pour ajouter les zones selon le nombre total de joueurs
+            if (totalPlayers === 4) {
+                player4Areas.forEach(({ player, x, y, width, height, color }) => {
+                    if (currentPlayer === player) {
+                        areas.push(
+                            <Rect
+                                key={`player${player}-restricted-area`}
+                                x={x}
+                                y={y}
+                                width={width}
+                                height={height}
+                                fill={color}  // Couleur du joueur
+                                opacity={0.2} // Opacité pour visualiser
+                            />
+                        );
+                    }
+                });
+            } else if (totalPlayers === 3) {
+                player3Areas.forEach(({ player, x, y, width, height, color }) => {
+                    if (currentPlayer === player) {
+                        areas.push(
+                            <Rect
+                                key={`player${player}-restricted-area`}
+                                x={x}
+                                y={y}
+                                width={width}
+                                height={height}
+                                fill={color}  // Couleur du joueur
+                                opacity={0.2} // Opacité pour visualiser
+                            />
+                        );
+                    }
+                });
+            }
+
+            return areas
         }
-    
-        return areas;
     };
 
 
@@ -273,26 +280,32 @@ const Page = ({ setZoomSlider, zoomSlider, playersScore, setPlayersScore, height
     };
 
     const isValidPoint = (x, y) => {
+
         let out = false;
+        const gameMode = localStorage.getItem("gameMode");
 
-        switch (currentPlayer) {
-            case 1:
-                out = (totalPlayers == 3) ? (x > marginLeft + width / 3) : (x > marginLeft + (7 * width) / 22);
-                break;
-        
-            case 2:
-                out = (totalPlayers == 3) ? ((x < marginLeft + width / 3) || (x > marginLeft +  2 * width / 3)) : (x < marginLeft + width - (7 * width) / 22);
-                break;
+        if (gameMode === "normal") {
+            out = true;
+        } else if (gameMode === "shared") {
+            switch (currentPlayer) {
+                case 1:
+                    out = (totalPlayers == 3) ? (x > marginLeft + width / 3) : (x > marginLeft + (7 * width) / 22);
+                    break;
 
-            case 3:
-                out = (totalPlayers == 3) ? (x < marginLeft + 2 * width / 3) : (y > marginTop + (7 * height) / 22);
-                break;
+                case 2:
+                    out = (totalPlayers == 3) ? ((x < marginLeft + width / 3) || (x > marginLeft + 2 * width / 3)) : (x < marginLeft + width - (7 * width) / 22);
+                    break;
 
-            case 4:
-                out = y < height + marginTop - (7 * height) / 22;
-                break;
-            default:
-                break;
+                case 3:
+                    out = (totalPlayers == 3) ? (x < marginLeft + 2 * width / 3) : (y > marginTop + (7 * height) / 22);
+                    break;
+
+                case 4:
+                    out = y < height + marginTop - (7 * height) / 22;
+                    break;
+                default:
+                    break;
+            }
         }
 
         return out && ((x > marginLeft - 20) && (x < marginLeft + width + 20) && (y > marginTop - 20) && (y < marginTop + height + 20));

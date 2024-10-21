@@ -1,2 +1,2 @@
-cd E:\Projects\GPL3\Back
+cd D:\GP\GPL3\Back
 dotnet run --urls=http://localhost:7001
