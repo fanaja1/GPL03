@@ -1,16 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Text;
 
 namespace Back.Controllers
 {
-    struct pos
-    {
-        public int x;
-        public int y;
-    }
 
     [Route("api/[controller]")]
     [ApiController]
@@ -78,6 +70,8 @@ namespace Back.Controllers
         List<List<List<Point>>> circuitList;
         List<Point> xyList;
 
+        ResponseIA res = new ResponseIA();
+
         bool secondValidation = false;
 
         public class ResponseData
@@ -96,8 +90,24 @@ namespace Back.Controllers
         public IActionResult ProcesData([FromBody] PlateauData data)
         {
             IA ia = new IA();
-            //ia.getnextMove(data.Plateau,-99999, 99999,true,4);
-            return Ok("okkkkkkkkkk");
+            ia.getnextMove(data.Plateau,-99999, 99999,false,4);
+
+            // // Structurer la réponse
+            var response = new ResponseData
+            {
+                currentPlayer = ia.x,
+                score = ia.y
+            };
+
+            res.x = ia.x;
+            res.y = ia.y;
+            return Ok(response);
+        }
+
+        public class ResponseIA
+        {
+            public int x;
+            public int y;
         }
 
         [HttpPut]

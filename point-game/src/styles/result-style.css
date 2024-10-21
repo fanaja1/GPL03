@@ -1,11 +1,19 @@
+/* Réinitialisation et styles généraux */
 * {
     padding: 0;
     margin: 0;
 }
 
 @font-face {
+    font-family: 'Mario';
+    src: url('../fonts/Mario.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+
+@font-face {
     font-family: 'Mooli';
-    src: url('../fonts/Mooli-Regular.ttf') format('truetype');/
+    src: url('../fonts/Mooli-Regular.ttf') format('truetype');
 }
 
 @font-face {
@@ -15,47 +23,65 @@
     font-style: normal;
 }
 
+@font-face {
+    font-family: 'retro';
+    src: url('../fonts/retro.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     font-family: 'Mooli', sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 header {
-    background-color: #0074D9;
     color: white;
     text-align: center;
-    padding: 20px 0;
+    padding: 20px;
 }
 
 h1 {
     margin: 0;
-    font-family: 'DatBox', sans-serif;
-    font-size: 5em;
+    font-size: 4em;
+    letter-spacing: 2px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
 }
 
 main {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
+    flex-direction: column;
     margin: 20px;
 }
 
 .result {
     text-align: center;
-    padding: 20px;
-    background-color: #fff;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
 }
 
-h2 {
-    color: #0074D9;
+ul {
+    list-style: none;
+    padding: 0;
 }
 
-p {
-    font-size: 24px;
-    margin: 0;
+li {
+    font-size: 1.5em;
+    margin: 10px 0;
+    font-weight: bold;
+    color: #333;
 }
 
 footer {
@@ -64,23 +90,38 @@ footer {
 }
 
 #quitter-button, #finish-button {
-    font-family: 'Buka Bird';
-    margin-top: 20px;
-    padding: 10px 20px;
-    background-color: #4caf50;
-    color: rgb(255, 255, 255);
-    letter-spacing: 2px;
-    text-shadow: 1px 1px 2px rgb(95, 95, 95);
+    font-family: 'retro', sans-serif;
+    margin: 10px 20px;
+    padding: 15px 30px;
+    background: linear-gradient(45deg, #1d976c, #93f9b9);
+    color: black;
     border: none;
-    border-radius: 5px;
+    border-radius: 50px;
     cursor: pointer;
     font-size: 1.2em;
-    font-weight: bold;
-    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    animation: bounceIn 1s;
+}
+
+#quitter-button:hover, #finish-button:hover {
+    transform: scale(1.1);
+    
+}
+
+#quitter-button:active, #finish-button:active {
+    transform: scale(0.95);
+    
 }
 
 @media (max-width: 768px) {
-    h1{
-        font-size: 2.8em;
+    h1 {
+        font-size: 2.5em;
+    }
+
+    .result {
+        padding: 20px;
+        width: 90%;
     }
 }

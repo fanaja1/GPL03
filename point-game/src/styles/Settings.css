@@ -1,0 +1,294 @@
+* {
+  padding: 0;
+  margin: 0;
+}
+
+@font-face {
+  font-family: 'DatBox';
+  src: url('../fonts/DatBox.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'retro';
+  src: url('../fonts/retro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mario';
+  src: url('../fonts/Mario.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Buka Bird';
+  src: url('../fonts/Buka Bird.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mooli';
+  src: url('../fonts/Mooli-Regular.ttf') format('truetype');
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  text-align: center;
+  font-family: 'retro', sans-serif !important;
+  background-color: #f5f3db;
+  margin: 0;
+  height: 100vh;
+}
+
+h1 {
+  font-family: 'Mario', sans-serif !important;
+  color: #1b771e;
+  text-decoration: underline;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding-top: 20px;
+  font-size: 1.8em !important;
+}
+
+.bot-option {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+  position: relative;
+  padding-left: 30px;
+  color: white;
+  text-shadow: 2px 2px 4px black;
+}
+
+.bot-option input[type="radio"] {
+  margin-right: 8px;
+  opacity: 0;
+  position: absolute;
+}
+
+
+
+/************************************bloc players-***********************************/
+#settings-container {
+  display: flex;
+  justify-content: space-between;
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 10px;
+  border-radius: 10px;
+  flex-wrap: wrap;
+  text-align: center;
+  background: linear-gradient(45deg, #d2001a, #7462ff, #f48e21, #23d5ab);
+  background-size: 300% 300%;
+  animation: color 12s ease-in-out infinite;
+}
+
+@keyframes color{
+  0%{
+    background-position: 0 50%;
+  }
+  50%{
+    background-position: 100% 50%;
+  }
+  100%{
+    background-position: 0 50%;
+  }
+}
+
+.players {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-around;
+  max-width: 450px;
+}
+
+.players > * {
+  margin: 5px;
+  min-height: 180px;
+}
+/*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*/
+.settings-section {
+  flex: 1;
+  padding: 20px;
+  border: 3px solid #ccc;
+  background-color: #fff;
+  border-radius: 25px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  margin: 0 10px;
+ 
+}
+
+label {
+  display: flex;
+  margin-top: 10px;
+  font-weight: bold;
+  
+}
+
+label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 10px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #0078d4;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+input[type="text"], select {
+  width: 100%;
+  padding: 5px;
+  margin-top: 5px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  font-family: 'Mario';
+  font-size: 15px;
+}
+
+.radio-group, .radio-group2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.radio-group > div, .radio-group2 > div {
+  margin: 5px 0;
+}
+
+input[type="radio"] {
+  opacity: 0;
+  position: absolute;
+}
+
+label[for="reflection-time"], label[for="game-time"] {
+  margin-bottom: 10px;
+}
+
+.radio-group label, .radio-group2 label {
+  font-size: 1em;
+  cursor: pointer;
+  padding-left: 25px;
+  position: relative;
+}
+
+.radio-group2 label::before, .radio-group label::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 1px;
+  width: 16px;
+  height: 16px;
+  border: 2px solid #0078d4;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+input[type="radio"]:checked + label::before {
+  background-color: #0078d4;
+  border-color: #0078d4;
+}
+
+#substitute {
+  font-size: 1.25em;
+  margin-top: 20px;
+  background-color: white;
+  border-radius: 5px;
+  padding: 5px;
+}
+
+.text {
+  color: white;
+  text-shadow: 2px 2px 4px black;
+}
+
+.player-count {
+  margin: 20px 0;
+  font-weight: bold;
+  font-family: 'retro';
+}
+
+.player-count select {
+  padding: 5px;
+  border: 1px solid #0078d4;
+  border-radius: 5px;
+  background-color: #f7f7f7;
+  font-size: 1em;
+  font-family: 'retro';
+}
+
+#start-game {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px 20px;
+  margin-top: 30px;
+  background: linear-gradient(45deg, #1d976c, #93f9b9);
+  font-family: 'retro';
+  font-size: 25px;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+  animation: bounceIn 1s;
+}
+
+#start-game:hover {
+  transform: scale(1.1);
+  background-color: #007bff; /* Change de couleur au survol */
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2); /* Ajoute une ombre portée */
+  
+}
+
+#start-game:active {
+  transform: scale(0.95); /* Légère réduction au clic */
+  background-color: #0056b3; /* Couleur plus foncée lors du clic */
+}
+
+/* Animation de rebond à l'apparition */
+@keyframes bounceIn {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
+@media (max-width: 768px) {
+  #settings-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .settings-section {
+    margin-bottom: 10px;
+    min-width: 90%;
+    max-width: 90%;
+  }
+
+  .players {
+    max-width: 100%;
+  }
+
+  .players > * {
+    min-width: 90%;
+  }
+}
+
+

@@ -1,0 +1,28 @@
+@keyframes fadeInOut {
+    0%, 100% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+
+.losange-container {
+    z-index: -1;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    
+}
+
+.losange {
+    position: absolute;
+    top: 0;
+    left: 0;
+    transform: rotate(45deg);
+    opacity: 0;
+    animation-fill-mode: forwards;
+}

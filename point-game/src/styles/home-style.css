@@ -87,7 +87,7 @@ a {
 }
 
 @media (max-width: 768px) {
-    .accueil-container h1 {
+    .accueil-container h1 { 
         font-size: 6.8em;
     }
 }

@@ -1,0 +1,142 @@
+@font-face {
+  font-family: 'Buka Bird';
+  src: url('../fonts/Buka\ Bird.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'DatBox';
+  src: url('../fonts/DatBox.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'retro';
+  src: url('../fonts/retro.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Mario';
+  src: url('../fonts/Mario.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@keyframes moveLeftRightLeft {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes moveLeftRightRight {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+.title-container {
+  display: flex;
+  flex-direction: column; 
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  text-align: center;
+  position: relative;
+  transform: translateY(-15%);
+  z-index: 2;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+  
+}
+
+.title-container img{
+  position: absolute;
+  left: -23%;
+  top: 14%;
+  transform: translateX(20%);
+  margin-left: 10px;
+}
+
+.animated-text {
+  font-family: 'DatBox', sans-serif;
+  font-size: 10em;
+  padding: 5px 10px;
+  border-radius: 20px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.button-container {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 20px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.button-container:hover {
+  transform: scale(1.1);
+}
+
+a {
+  font-family: 'retro', sans-serif;
+  font-size: 30px;
+  margin-left: 10px;
+  margin-right: 10px;
+  padding: 10px 20px;
+  border-radius: 50px;
+  text-decoration: none;
+  display: inline-block;
+  background: linear-gradient(45deg, #1d976c, #93f9b9);
+  color: #1d976c;
+}
+
+a:hover{
+  color: #93f9b9;
+  
+}
+
+a.bounce {
+  animation: bounce 0.4s;
+}
+
+.left-triangle,
+.right-triangle {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  position: relative;
+}
+
+.left-triangle {
+  border-width: 15px 15px 15px 0;
+  border-color: transparent #1d976c transparent transparent;
+  margin-right: 10px;
+  animation: moveLeftRightLeft 1s infinite ease-in-out; 
+}
+
+.right-triangle {
+  border-width: 15px 0 15px 15px;
+  border-color: transparent transparent transparent #1d976c;
+  margin-left: 10px;
+  animation: moveLeftRightRight 1s infinite ease-in-out; 
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-20px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
+}

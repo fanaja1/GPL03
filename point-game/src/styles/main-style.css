@@ -84,12 +84,12 @@ button {
     margin: 0 5px;
 }
 
-#quitter-button {
+#quitterbutton {
     background-color: #ff5722;
     color: #fff;
 }
 
-#finish-button {
+#finishbutton {
     background-color: #4caf50;
     color: #fff;
 }

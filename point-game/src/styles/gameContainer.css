@@ -1,0 +1,26 @@
+
+button {
+    font-size: 1em;
+    font-weight: bold;
+    /* padding: 5px 10px; */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    flex-grow: 1;
+    margin: 0 5px;
+}
+
+#quitterbutton {
+    background-color: #ff5722;
+    color: #fff;
+}
+
+#finishbutton {
+    background-color: #4caf50;
+    color: #fff;
+}
+
+#pauseResumeButton {
+    background-color: #2196f3;
+    color: #fff;
+}
